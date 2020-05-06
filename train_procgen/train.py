@@ -53,7 +53,10 @@ def main():
 
     log_comm = comm.Split(1 if is_test_worker else 0, 0)
     format_strs = ['csv', 'stdout'] if log_comm.Get_rank() == 0 else []
-    logger.configure(dir=LOG_DIR, format_strs=format_strs)
+    logger.configure(dir=LOG_DIR, 
+                     format_strs=format_strs,
+                     log_suffix="total_timesteps_{}_num_levels_{}".format(args.test_worker_interval,
+                                                                          num_levels))
 
     logger.info("creating environment")
     venv = ProcgenEnv(num_envs=num_envs, env_name=args.env_name, num_levels=num_levels, start_level=args.start_level, distribution_mode=args.distribution_mode)
