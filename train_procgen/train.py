@@ -25,7 +25,7 @@ def main():
     nminibatches = 8
     ppo_epochs = 3
     clip_range = .2
-    timesteps_per_proc = 50_000_000
+    # timesteps_per_proc = 50_000_000
     use_vf_clipping = True
 
     parser = argparse.ArgumentParser(description='Process procgen training arguments.')
@@ -34,6 +34,7 @@ def main():
     parser.add_argument('--num_levels', type=int, default=0)
     parser.add_argument('--start_level', type=int, default=0)
     parser.add_argument('--test_worker_interval', type=int, default=0)
+    parser.add_argument('--total_timesteps', type=int, default=0)
 
     args = parser.parse_args()
 
@@ -77,7 +78,7 @@ def main():
     ppo2.learn(
         env=venv,
         network=conv_fn,
-        total_timesteps=timesteps_per_proc,
+        total_timesteps=args.test_worker_interval,
         save_interval=0,
         nsteps=nsteps,
         nminibatches=nminibatches,
