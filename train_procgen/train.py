@@ -78,28 +78,37 @@ def main():
     conv_fn = lambda x: build_impala_cnn(x, depths=[16,32,32], emb_size=256)
 
     logger.info("training")
-    ppo2.learn(
-        env=venv,
-        network=conv_fn,
-        total_timesteps=args.test_worker_interval,
-        save_interval=0,
-        nsteps=nsteps,
-        nminibatches=nminibatches,
-        lam=lam,
-        gamma=gamma,
-        noptepochs=ppo_epochs,
-        log_interval=1,
-        ent_coef=ent_coef,
-        mpi_rank_weight=mpi_rank_weight,
-        clip_vf=use_vf_clipping,
-        comm=comm,
-        lr=learning_rate,
-        cliprange=clip_range,
-        update_fn=None,
-        init_fn=None,
-        vf_coef=0.5,
-        max_grad_norm=0.5,
-    )
+    model = ppo2.learn(
+                    env=venv,
+                    network=conv_fn,
+                    total_timesteps=args.test_worker_interval,
+                    save_interval=0,
+                    nsteps=nsteps,
+                    nminibatches=nminibatches,
+                    lam=lam,
+                    gamma=gamma,
+                    noptepochs=ppo_epochs,
+                    log_interval=1,
+                    ent_coef=ent_coef,
+                    mpi_rank_weight=mpi_rank_weight,
+                    clip_vf=use_vf_clipping,
+                    comm=comm,
+                    lr=learning_rate,
+                    cliprange=clip_range,
+                    update_fn=None,
+                    init_fn=None,
+                    vf_coef=0.5,
+                    max_grad_norm=0.5,
+                )
+
+    # Save the model
+    model.save("model/model_total_timesteps_{}_num_levels_{}".format(args.test_worker_interval,
+                                                                     num_levels))
+
+    # Test the model
+    from baselines.ppo2.model import Model
+    model_fn = Model
+    # check https://github.com/openai/baselines/blob/master/baselines/ppo2/test_microbatches.py
 
 if __name__ == '__main__':
     main()
